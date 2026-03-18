@@ -1,0 +1,226 @@
+# ╔══════════════════════════════════════════════════════╗
+# ║     CANCERIANMIND — COMPLETE DEPLOYMENT GUIDE       ║
+# ║     Every command you need. Copy & paste exactly.   ║
+# ╚══════════════════════════════════════════════════════╝
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STEP 1 — DEPLOY WEB APP (Do this TODAY — 15 minutes)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1a. Install Node.js (if not installed):
+    → Go to: https://nodejs.org → Download LTS version → Install
+
+1b. Install Vercel CLI:
+    npm install -g vercel
+
+1c. Go to the pwa folder:
+    cd cancerianmind/pwa
+
+1d. Deploy to Vercel:
+    vercel
+
+    When prompted:
+    - Set up and deploy? → Y
+    - Which scope? → Your username
+    - Link to existing project? → N
+    - What's your project's name? → cancerianmind
+    - In which directory is your code? → ./
+    - Override settings? → N
+
+1e. Your app is LIVE at: https://cancerianmind.vercel.app  ✓
+    Share this link — it works on all phones as a PWA!
+
+1f. Set production domain (optional):
+    vercel --prod
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STEP 2 — DEPLOY BACKEND API (Railway — 20 minutes)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2a. Create account at: https://railway.app (free)
+
+2b. Install Railway CLI:
+    npm install -g @railway/cli
+
+2c. Login:
+    railway login
+
+2d. Go to backend folder and deploy:
+    cd cancerianmind/backend
+    railway init
+    railway up
+
+2e. Add your Anthropic API key as environment variable:
+    railway variables set ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE
+
+    Get your key at: https://console.anthropic.com
+
+2f. Get your backend URL:
+    railway domain
+
+    It will look like: https://cancerianmind-api.up.railway.app
+
+2g. Update BACKEND_URL in react-native/src/theme.ts:
+    export const BACKEND_URL = 'https://cancerianmind-api.up.railway.app';
+
+2h. Also update the web app — in pwa/index.html find:
+    https://api.anthropic.com/v1/messages
+    Replace with your Railway URL + /chat
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STEP 3 — BUILD REACT NATIVE APP (Expo — 1 hour)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3a. Install dependencies:
+    cd cancerianmind/react-native
+    npm install
+
+3b. Install Expo CLI and EAS CLI:
+    npm install -g expo-cli eas-cli
+
+3c. Create Expo account at: https://expo.dev (free)
+
+3d. Login to Expo:
+    npx expo login
+
+3e. Test on your phone immediately:
+    npx expo start
+    → Scan QR code with Expo Go app (download from App Store / Play Store)
+    → Your app runs on your phone instantly!
+
+3f. Create EAS project:
+    eas init
+
+    This gives you a projectId — paste it into app.json:
+    "extra": { "eas": { "projectId": "YOUR_ID_HERE" } }
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STEP 4 — GOOGLE PLAY STORE (Do this first — easier)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4a. YOU DO THIS (cannot be automated):
+    → Go to: https://play.google.com/console
+    → Click "Create account"
+    → Pay one-time $25 fee (≈ ₹2,100)
+    → Fill in developer name: CancerianMind
+    → Accept agreements
+
+4b. Build the Android app bundle:
+    cd cancerianmind/react-native
+    eas build --platform android --profile production
+
+    This runs in the cloud — takes 10-20 minutes.
+    When done, you get a download link for the .aab file.
+
+4c. Create app in Play Console:
+    → Click "Create app"
+    → App name: CancerianMind — Psychology AI
+    → Default language: English (India)
+    → App type: App
+    → Free / Paid: Free
+    → Accept policies
+
+4d. Fill in Store Listing:
+    → Copy from: store-assets/store-listings.txt
+    → Short description, full description, screenshots
+
+4e. Upload your .aab file:
+    → Production → Create new release
+    → Upload the .aab from step 4b
+
+4f. Complete content rating questionnaire:
+    → IARC rating questionnaire
+    → Select: "References to real gambling or betting" → No
+    → "Simulated gambling" → No
+    → "Health and medical" → Yes (mental health app)
+    → Expected rating: Everyone 10+ or Teen
+
+4g. Submit for review:
+    → Review and roll out to production
+    → Review takes 1-3 days ✓
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STEP 5 — APPLE APP STORE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5a. YOU DO THIS (cannot be automated):
+    → Go to: https://developer.apple.com/programs
+    → Enroll in Apple Developer Program
+    → Pay $99/year (≈ ₹8,200)
+    → Requires Apple ID + credit card + 1-2 days approval
+
+5b. Build the iOS app:
+    cd cancerianmind/react-native
+    eas build --platform ios --profile production
+
+    EAS builds in the cloud — no Mac needed!
+    Takes 20-40 minutes. You get an .ipa download link.
+
+5c. Create app in App Store Connect:
+    → Go to: https://appstoreconnect.apple.com
+    → My Apps → + → New App
+    → Platform: iOS
+    → Name: CancerianMind
+    → Bundle ID: com.cancerianmind.app
+    → SKU: cancerianmind-001
+
+5d. Fill App Information:
+    → Copy everything from: store-assets/store-listings.txt
+    → Privacy Policy URL: https://cancerianmind.vercel.app/privacy
+      (or create a simple page with the privacy policy text)
+
+5e. Upload screenshots:
+    Take screenshots on:
+    - iPhone 6.7" (iPhone 15 Pro Max)
+    - iPhone 6.5" (iPhone 14 Plus)
+    Use Expo's simulator or a real device.
+
+5f. Upload the .ipa:
+    eas submit --platform ios
+    OR upload manually via Transporter app (Mac) or via browser.
+
+5g. Answer App Review questions:
+    → Does app contain health/medical information? YES
+    → Does it include crisis resources? YES (required for mental health apps)
+    → Encryption: Standard HTTPS only → NO for export compliance
+
+5h. Submit for review:
+    → Review takes 2-7 days
+    → Mental health apps may get extra scrutiny — that's normal
+    → If rejected, fix the issue they mention and resubmit ✓
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# WHAT YOU NEED TO CREATE (accounts only you can make)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Account                   | URL                                    | Cost
+--------------------------|----------------------------------------|----------
+Vercel (web hosting)      | vercel.com                             | FREE
+Railway (backend)         | railway.app                            | FREE
+Expo (mobile build)       | expo.dev                               | FREE
+Anthropic API key         | console.anthropic.com                  | Pay as you go
+Google Play Console       | play.google.com/console                | $25 one-time
+Apple Developer Program   | developer.apple.com/programs           | $99/year
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# RECOMMENDED ORDER (fastest path to live users)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Day 1:   Deploy web app to Vercel (Step 1) — share with real users TODAY
+Day 2:   Deploy backend to Railway (Step 2) — connect live AI
+Day 3-7: Build React Native app, test on your phone (Step 3)
+Week 2:  Register Google Play Console + submit Android app (Step 4)
+Week 3:  Register Apple Developer + submit iOS app (Step 5)
+Week 5:  Both apps LIVE on stores ✓
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# IF YOU GET STUCK — paste the error to Claude and say:
+# "I got this error while deploying CancerianMind: [error]"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
