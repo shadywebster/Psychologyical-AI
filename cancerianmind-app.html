@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>CancerianMind</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0c10;
+  --bg2: #111318;
+  --bg3: #181b22;
+  --card: #1c2029;
+  --card2: #222633;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --teal: #5ecfb1;
+  --teal2: #8ee0c9;
+  --teal-dim: rgba(94,207,177,0.1);
+  --teal-glow: rgba(94,207,177,0.06);
+  --lavender: #a89fd8;
+  --lavender-dim: rgba(168,159,216,0.1);
+  --coral: #f0836a;
+  --coral-dim: rgba(240,131,106,0.1);
+  --amber: #f5c842;
+  --amber-dim: rgba(245,200,66,0.1);
+  --text: #eceef5;
+  --text2: #8b92a8;
+  --text3: #4a5068;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --nav-h: 72px;
+  --safe-top: 44px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Phone shell */
+.phone {
+  width: 390px;
+  height: 844px;
+  background: var(--bg);
+  border-radius: 48px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 40px 100px rgba(0,0,0,0.8);
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status bar */
+.status-bar {
+  height: var(--safe-top);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+.status-time { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.status-icons { display: flex; gap: 6px; align-items: center; }
+.status-icons svg { width: 16px; height: 12px; }
+
+/* Notch */
+.notch {
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 126px; height: 34px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  z-index: 200;
+}
+
+/* Screen container */
+.screens {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: none;
+  flex-direction: column;
+  padding-bottom: var(--nav-h);
+}
+.screen.active { display: flex; }
+.screen::-webkit-scrollbar { display: none; }
+
+/* Bottom nav */
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(17,19,24,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 8px 8px;
+  z-index: 50;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  border-radius: 14px;
+  transition: background 0.2s;
+}
+.nav-item:hover { background: var(--bg3); }
+.nav-item .nav-icon { width: 24px; height: 24px; opacity: 0.4; transition: opacity 0.2s; }
+.nav-item .nav-label { font-size: 10px; color: var(--text3); font-weight: 500; transition: color 0.2s; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-item.active .nav-label { color: var(--teal); }
+.nav-item.active .nav-icon-svg { stroke: var(--teal); }
+
+/* ============ HOME SCREEN ============ */
+.home-header {
+  padding: 20px 22px 0;
+}
+.home-greeting {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.home-greeting em { font-style: italic; color: var(--teal2); }
+.home-date { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+
+/* Mood check-in card */
+.mood-checkin {
+  margin: 0 22px 16px;
+  background: linear-gradient(135deg, #1a2e28 0%, #16222e 100%);
+  border: 0.5px solid rgba(94,207,177,0.2);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.mood-checkin-title { font-size: 13px; color: var(--teal2); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.02em; }
+.mood-row { display: flex; justify-content: space-between; }
+.mood-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; padding: 6px 8px; border-radius: 12px;
+  transition: background 0.15s;
+}
+.mood-opt:hover, .mood-opt.sel { background: rgba(94,207,177,0.12); }
+.mood-emoji { font-size: 24px; line-height: 1; }
+.mood-lbl { font-size: 10px; color: var(--text3); font-weight: 500; }
+.mood-opt.sel .mood-lbl { color: var(--teal); }
+
+/* Quick stats */
+.stats-row {
+  display: flex; gap: 10px;
+  padding: 0 22px 16px;
+}
+.stat-card {
+  flex: 1;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  text-align: center;
+}
+.stat-num { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.stat-lbl { font-size: 10px; color: var(--text3); font-weight: 500; }
+
+/* Today's activity */
+.section-hd {
+  padding: 0 22px 10px;
+  font-size: 13px; font-weight: 600; color: var(--text2); letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+.activity-list { padding: 0 22px; display: flex; flex-direction: column; gap: 10px; }
+.activity-card {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.activity-card:hover { border-color: var(--border2); }
+.act-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.act-info { flex: 1; }
+.act-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.act-sub { font-size: 12px; color: var(--text3); }
+.act-arrow { color: var(--text3); font-size: 16px; }
+
+/* Insight card */
+.insight-card {
+  margin: 16px 22px;
+  background: linear-gradient(135deg, #1e1a2e 0%, #1a1e2e 100%);
+  border: 0.5px solid rgba(168,159,216,0.2);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.insight-tag { font-size: 10px; font-weight: 600; color: var(--lavender); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.insight-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ============ CHAT SCREEN ============ */
+.chat-header {
+  padding: 16px 22px 12px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+.therapist-avatar {
+  width: 42px; height: 42px; border-radius: 14px;
+  background: var(--teal-dim);
+  border: 1px solid rgba(94,207,177,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.therapist-info { flex: 1; }
+.therapist-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.therapist-status { font-size: 12px; color: var(--teal); display: flex; align-items: center; gap: 5px; }
+.online-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: pulse 2s infinite; }
+
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.chat-messages::-webkit-scrollbar { display: none; }
+
+.cmsg { display: flex; gap: 8px; }
+.cmsg.user { flex-direction: row-reverse; }
+.cmsg-avatar {
+  width: 28px; height: 28px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px; font-size: 12px;
+}
+.cmsg-avatar.ai { background: var(--teal-dim); border: 1px solid rgba(94,207,177,0.2); }
+.cmsg-avatar.user { background: rgba(168,159,216,0.15); border: 1px solid rgba(168,159,216,0.2); color: var(--lavender); font-weight: 600; }
+.cbubble {
+  max-width: 72%; padding: 11px 14px;
+  font-size: 13.5px; line-height: 1.65; border-radius: 16px;
+}
+.cbubble.ai { background: var(--card); border: 0.5px solid var(--border); border-bottom-left-radius: 4px; color: var(--text); }
+.cbubble.user { background: rgba(94,207,177,0.12); border: 0.5px solid rgba(94,207,177,0.2); border-bottom-right-radius: 4px; color: var(--text); }
+.cbubble.crisis { background: rgba(240,131,106,0.08); border-color: rgba(240,131,106,0.25); }
+.crisis-hotline-inline {
+  margin-top: 8px; padding: 8px 10px;
+  background: rgba(240,131,106,0.1); border-radius: 8px;
+  font-size: 12px; color: var(--coral);
+}
+
+.typing-bubble { padding: 11px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; border-bottom-left-radius: 4px; display: flex; gap: 4px; width: 52px; }
+.typing-bubble span { width: 6px; height: 6px; background: var(--text3); border-radius: 50%; animation: tdot 1.2s infinite; }
+.typing-bubble span:nth-child(2) { animation-delay:.2s }
+.typing-bubble span:nth-child(3) { animation-delay:.4s }
+@keyframes tdot { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-4px);opacity:1} }
+
+.chat-input-area {
+  padding: 10px 12px 14px;
+  border-top: 0.5px solid var(--border);
+  display: flex; align-items: flex-end; gap: 8px;
+  flex-shrink: 0;
+}
+.chat-textarea {
+  flex: 1; background: var(--card); border: 0.5px solid var(--border2);
+  border-radius: 14px; padding: 10px 14px;
+  color: var(--text); font-family: 'Nunito', sans-serif; font-size: 13.5px;
+  resize: none; outline: none; max-height: 100px; line-height: 1.5;
+}
+.chat-textarea::placeholder { color: var(--text3); }
+.chat-textarea:focus { border-color: rgba(94,207,177,0.3); }
+.send-btn {
+  width: 40px; height: 40px; background: var(--teal); border: none;
+  border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s; color: #0a0c10;
+}
+.send-btn:hover { transform: scale(1.05); background: var(--teal2); }
+.send-btn:disabled { background: var(--card); color: var(--text3); cursor: not-allowed; transform: none; }
+
+/* ============ JOURNAL SCREEN ============ */
+.journal-header { padding: 20px 22px 16px; }
+.journal-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); margin-bottom: 4px; }
+.journal-sub { font-size: 13px; color: var(--text3); }
+
+.new-entry-btn {
+  margin: 0 22px 20px;
+  background: linear-gradient(135deg, var(--teal-dim) 0%, var(--lavender-dim) 100%);
+  border: 0.5px solid rgba(94,207,177,0.2);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.2s;
+}
+.new-entry-btn:hover { border-color: rgba(94,207,177,0.4); }
+.new-entry-icon { font-size: 22px; }
+.new-entry-text .net-title { font-size: 14px; font-weight: 600; color: var(--teal2); }
+.new-entry-text .net-sub { font-size: 12px; color: var(--text3); }
+
+.mood-week {
+  margin: 0 22px 20px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+.mw-title { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.mw-bars { display: flex; align-items: flex-end; gap: 6px; height: 60px; }
+.mw-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.mw-bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--teal); opacity: 0.3; transition: opacity 0.2s; }
+.mw-bar.today { opacity: 1; }
+.mw-day { font-size: 9px; color: var(--text3); font-weight: 500; }
+
+.entry-list { padding: 0 22px; display: flex; flex-direction: column; gap: 10px; }
+.entry-card {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.entry-card:hover { border-color: var(--border2); }
+.entry-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.entry-date { font-size: 11px; color: var(--text3); font-weight: 500; }
+.entry-mood-pill {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600;
+}
+.entry-preview { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.entry-ai-insight { margin-top: 8px; padding: 8px 10px; background: var(--lavender-dim); border-radius: 8px; font-size: 11px; color: var(--lavender); }
+
+/* ============ EXERCISES SCREEN ============ */
+.ex-header { padding: 20px 22px 16px; }
+.ex-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); margin-bottom: 4px; }
+.ex-sub { font-size: 13px; color: var(--text3); }
+
+.ex-featured {
+  margin: 0 22px 20px;
+  background: linear-gradient(135deg, #1a2a22 0%, #1e2a1a 100%);
+  border: 0.5px solid rgba(94,207,177,0.2);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+}
+.ex-feat-tag { font-size: 10px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.ex-feat-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); margin-bottom: 6px; }
+.ex-feat-sub { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
+.ex-feat-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal); color: #0a0c10; border: none;
+  border-radius: 10px; padding: 8px 16px; font-size: 13px; font-weight: 600;
+  font-family: 'Nunito', sans-serif; cursor: pointer;
+}
+
+.ex-grid { padding: 0 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.ex-card {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.ex-card:hover { border-color: var(--border2); }
+.ex-card-icon { font-size: 24px; margin-bottom: 8px; }
+.ex-card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.ex-card-dur { font-size: 11px; color: var(--text3); }
+.ex-card-bar { height: 3px; border-radius: 2px; margin-top: 10px; overflow: hidden; background: var(--bg3); }
+.ex-card-prog { height: 100%; border-radius: 2px; background: var(--teal); }
+
+/* Breathing exercise modal */
+.breathe-modal {
+  display: none;
+  position: absolute; inset: 0; background: var(--bg);
+  z-index: 200; flex-direction: column; align-items: center; justify-content: center;
+  padding: 30px 24px;
+}
+.breathe-modal.active { display: flex; }
+.breathe-close {
+  position: absolute; top: 60px; left: 22px;
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: 10px; padding: 6px 12px;
+  color: var(--text2); font-size: 13px; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+.breathe-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--text); margin-bottom: 8px; text-align: center; }
+.breathe-subtitle { font-size: 13px; color: var(--text3); margin-bottom: 40px; text-align: center; }
+.breathe-circle-wrap { position: relative; width: 200px; height: 200px; margin-bottom: 40px; }
+.breathe-ring {
+  width: 200px; height: 200px; border-radius: 50%;
+  border: 2px solid rgba(94,207,177,0.15);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.breathe-inner {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(94,207,177,0.2), rgba(94,207,177,0.05));
+  border: 1px solid rgba(94,207,177,0.3);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 4s cubic-bezier(0.4,0,0.2,1);
+}
+.breathe-inner.expand { width: 170px; height: 170px; background: radial-gradient(circle, rgba(94,207,177,0.3), rgba(94,207,177,0.08)); }
+.breathe-inner.hold { width: 170px; height: 170px; }
+.breathe-inner.shrink { width: 120px; height: 120px; background: radial-gradient(circle, rgba(94,207,177,0.1), rgba(94,207,177,0.02)); }
+.breathe-phase { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--teal); text-align: center; }
+.breathe-count { font-size: 28px; font-weight: 600; color: var(--text); text-align: center; margin-bottom: 12px; }
+.breathe-instruction { font-size: 14px; color: var(--text2); text-align: center; margin-bottom: 30px; }
+.breathe-start {
+  background: var(--teal); color: #0a0c10; border: none;
+  border-radius: 14px; padding: 14px 40px;
+  font-size: 15px; font-weight: 600; font-family: 'Nunito', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+}
+.breathe-start:hover { transform: scale(1.03); }
+
+/* ============ PROFILE SCREEN ============ */
+.profile-header {
+  padding: 20px 22px 24px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.profile-avatar-wrap { position: relative; margin-bottom: 14px; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 26px;
+  background: linear-gradient(135deg, var(--teal-dim), var(--lavender-dim));
+  border: 1px solid rgba(94,207,177,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.profile-badge {
+  position: absolute; bottom: -4px; right: -4px;
+  background: var(--amber); border-radius: 8px; padding: 2px 6px;
+  font-size: 10px; font-weight: 700; color: #0a0c10;
+}
+.profile-name { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); margin-bottom: 4px; }
+.profile-since { font-size: 12px; color: var(--text3); }
+
+.wellness-score {
+  margin: 0 22px 20px;
+  background: linear-gradient(135deg, #1a2a22, #1a1e2e);
+  border: 0.5px solid rgba(94,207,177,0.15);
+  border-radius: var(--radius);
+  padding: 18px; display: flex; align-items: center; gap: 16px;
+}
+.score-ring {
+  width: 64px; height: 64px; flex-shrink: 0;
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.score-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.score-num { font-size: 18px; font-weight: 700; color: var(--teal); position: relative; z-index: 1; }
+.score-info .score-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+.score-info .score-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+.profile-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; padding: 0 22px 20px;
+}
+.pstat { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; }
+.pstat-num { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.pstat-lbl { font-size: 10px; color: var(--text3); font-weight: 500; }
+
+.settings-list { padding: 0 22px; display: flex; flex-direction: column; gap: 8px; }
+.setting-item {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.setting-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.setting-label { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; }
+.setting-arrow { color: var(--text3); font-size: 14px; }
+
+/* Crisis banner */
+.crisis-banner {
+  margin: 0 22px 16px;
+  background: rgba(240,131,106,0.08);
+  border: 0.5px solid rgba(240,131,106,0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.crisis-banner-text .cb-title { font-size: 13px; font-weight: 600; color: var(--coral); }
+.crisis-banner-text .cb-sub { font-size: 11px; color: var(--text3); }
+
+/* Journal write modal */
+.write-modal {
+  display: none; position: absolute; inset: 0;
+  background: var(--bg); z-index: 200; flex-direction: column;
+}
+.write-modal.active { display: flex; }
+.write-modal-header {
+  padding: 60px 22px 16px;
+  border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.write-modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
+.write-close { background: var(--card); border: 0.5px solid var(--border); border-radius: 10px; padding: 6px 12px; color: var(--text2); font-size: 13px; cursor: pointer; font-family: 'Nunito', sans-serif; }
+.write-save { background: var(--teal); border: none; border-radius: 10px; padding: 6px 14px; color: #0a0c10; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Nunito', sans-serif; }
+.write-body { flex: 1; padding: 20px 22px; }
+.write-prompt { font-size: 12px; color: var(--teal); font-weight: 600; margin-bottom: 12px; }
+.write-area {
+  width: 100%; height: calc(100% - 60px);
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'Nunito', sans-serif; font-size: 15px;
+  line-height: 1.8; resize: none;
+}
+.write-area::placeholder { color: var(--text3); }
+
+/* Animations */
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.screen.active > * { animation: fadeUp 0.3s ease forwards; }
+
+/* Scroll padding */
+.screen { padding-bottom: calc(var(--nav-h) + 16px); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Notch -->
+  <div class="notch"></div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 17 12" fill="white" opacity="0.8"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.4"/></svg>
+      <svg viewBox="0 0 16 12" fill="none" stroke="white" stroke-width="1.5" opacity="0.8"><path d="M8 3C9.5 3 10.8 3.6 11.8 4.5L13.5 2.8C12 1.3 10.1.5 8 .5S4 1.3 2.5 2.8L4.2 4.5C5.2 3.6 6.5 3 8 3z"/><path d="M8 6C9 6 9.9 6.4 10.5 7.1L12.2 5.4C11.1 4.5 9.6 4 8 4S4.9 4.5 3.8 5.4L5.5 7.1C6.1 6.4 7 6 8 6z"/><circle cx="8" cy="10" r="1.5" fill="white"/></svg>
+      <svg viewBox="0 0 25 12" fill="white" opacity="0.8"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="3.5" width="2" height="5" rx="1"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" opacity="0.9"/></svg>
+    </div>
+  </div>
+
+  <!-- Screens -->
+  <div class="screens">
+
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+      <div class="home-header">
+        <div class="home-greeting">Good morning,<br/><em>how are you today?</em></div>
+        <div class="home-date">Wednesday, 18 March 2026</div>
+      </div>
+
+      <div class="mood-checkin">
+        <div class="mood-checkin-title">Daily check-in</div>
+        <div class="mood-row">
+          <div class="mood-opt" onclick="selectMood(this,'😔','Sad')"><span class="mood-emoji">😔</span><span class="mood-lbl">Sad</span></div>
+          <div class="mood-opt" onclick="selectMood(this,'😟','Anxious')"><span class="mood-emoji">😟</span><span class="mood-lbl">Anxious</span></div>
+          <div class="mood-opt sel" onclick="selectMood(this,'😐','Neutral')"><span class="mood-emoji">😐</span><span class="mood-lbl">Neutral</span></div>
+          <div class="mood-opt" onclick="selectMood(this,'🙂','Okay')"><span class="mood-emoji">🙂</span><span class="mood-lbl">Okay</span></div>
+          <div class="mood-opt" onclick="selectMood(this,'😊','Good')"><span class="mood-emoji">😊</span><span class="mood-lbl">Good</span></div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Day streak</div></div>
+        <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Sessions</div></div>
+        <div class="stat-card"><div class="stat-num">72</div><div class="stat-lbl">Wellness score</div></div>
+      </div>
+
+      <div class="section-hd">Continue today</div>
+      <div class="activity-list">
+        <div class="activity-card" onclick="goTo('chat')">
+          <div class="act-icon" style="background:var(--teal-dim)">💬</div>
+          <div class="act-info">
+            <div class="act-title">Talk to your therapist</div>
+            <div class="act-sub">AI therapy session • Ready</div>
+          </div>
+          <div class="act-arrow">›</div>
+        </div>
+        <div class="activity-card" onclick="goTo('exercises')">
+          <div class="act-icon" style="background:var(--lavender-dim)">🧘</div>
+          <div class="act-info">
+            <div class="act-title">4-7-8 breathing</div>
+            <div class="act-sub">5 min • Reduces anxiety</div>
+          </div>
+          <div class="act-arrow">›</div>
+        </div>
+        <div class="activity-card" onclick="goTo('journal')">
+          <div class="act-icon" style="background:var(--amber-dim)">📝</div>
+          <div class="act-info">
+            <div class="act-title">Write in your journal</div>
+            <div class="act-sub">Today's reflection prompt ready</div>
+          </div>
+          <div class="act-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-tag">AI insight for you</div>
+        <div class="insight-text">"You've shown remarkable consistency this week. Your anxiety patterns suggest mornings are your most vulnerable time — consider starting with a breathing exercise before checking your phone."</div>
+      </div>
+
+      <div class="crisis-banner" onclick="showCrisisHelp()">
+        <span style="font-size:18px">🆘</span>
+        <div class="crisis-banner-text">
+          <div class="cb-title">Need immediate help?</div>
+          <div class="cb-sub">Crisis helplines available 24/7</div>
+        </div>
+        <span style="color:var(--coral);font-size:16px">›</span>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="screen" id="screen-chat">
+      <div class="chat-header">
+        <div class="therapist-avatar">🤖</div>
+        <div class="therapist-info">
+          <div class="therapist-name">CancerianMind AI</div>
+          <div class="therapist-status"><span class="online-dot"></span>Online • Here for you</div>
+        </div>
+        <div style="width:32px;height:32px;background:var(--card);border:0.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px">⋮</div>
+      </div>
+
+      <div class="chat-messages" id="chat-msgs">
+        <div class="cmsg">
+          <div class="cmsg-avatar ai">🤖</div>
+          <div class="cbubble ai">Hello 🌿 I'm so glad you're here. I'm CancerianMind — your safe space to talk, reflect, and heal. How are you feeling today?</div>
+        </div>
+        <div class="cmsg">
+          <div class="cmsg-avatar ai">🤖</div>
+          <div class="cbubble ai">I noticed from your check-in that you're feeling neutral today. That's completely valid — would you like to explore what's behind that feeling?</div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Share what's on your mind..." onkeydown="chatKey(event)" oninput="resizeTA(this)"></textarea>
+        <button class="send-btn" id="chat-send" onclick="sendChat()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="screen" id="screen-journal">
+      <div class="journal-header">
+        <div class="journal-title">Your journal</div>
+        <div class="journal-sub">Reflect, release, grow</div>
+      </div>
+
+      <div class="new-entry-btn" onclick="openWriteModal()">
+        <span class="new-entry-icon">✍️</span>
+        <div class="new-entry-text">
+          <div class="net-title">Write today's entry</div>
+          <div class="net-sub">Prompt: "What made you smile today?"</div>
+        </div>
+        <span style="color:var(--teal);font-size:18px">+</span>
+      </div>
+
+      <div class="mood-week">
+        <div class="mw-title">This week's mood</div>
+        <div class="mw-bars">
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:40%"></div><div class="mw-day">Mon</div></div>
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:60%"></div><div class="mw-day">Tue</div></div>
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:35%"></div><div class="mw-day">Wed</div></div>
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:75%"></div><div class="mw-day">Thu</div></div>
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:55%"></div><div class="mw-day">Fri</div></div>
+          <div class="mw-bar-wrap"><div class="mw-bar" style="height:80%"></div><div class="mw-day">Sat</div></div>
+          <div class="mw-bar-wrap today"><div class="mw-bar today" style="height:50%"></div><div class="mw-day" style="color:var(--teal)">Sun</div></div>
+        </div>
+      </div>
+
+      <div class="section-hd">Past entries</div>
+      <div class="entry-list">
+        <div class="entry-card">
+          <div class="entry-top">
+            <span class="entry-date">March 17 · 10:24 PM</span>
+            <span class="entry-mood-pill" style="background:var(--teal-dim);color:var(--teal)">😊 Good</span>
+          </div>
+          <div class="entry-preview">Today I managed to finish the project I'd been procrastinating on. Felt a wave of relief...</div>
+          <div class="entry-ai-insight">AI: You show pride and relief — this is cognitive restructuring in action 🌱</div>
+        </div>
+        <div class="entry-card">
+          <div class="entry-top">
+            <span class="entry-date">March 16 · 9:15 PM</span>
+            <span class="entry-mood-pill" style="background:var(--lavender-dim);color:var(--lavender)">😟 Anxious</span>
+          </div>
+          <div class="entry-preview">Couldn't stop the loop of thoughts about the meeting tomorrow. Tried the breathing exercise...</div>
+          <div class="entry-ai-insight">AI: Anticipatory anxiety is very common. Your breathing practice is building real resilience 💪</div>
+        </div>
+        <div class="entry-card">
+          <div class="entry-top">
+            <span class="entry-date">March 15 · 8:45 PM</span>
+            <span class="entry-mood-pill" style="background:var(--amber-dim);color:var(--amber)">🙂 Okay</span>
+          </div>
+          <div class="entry-preview">Had a long conversation with an old friend. Felt seen for the first time in a while...</div>
+          <div class="entry-ai-insight">AI: Social connection is powerful medicine. Nurture these relationships 🌻</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXERCISES -->
+    <div class="screen" id="screen-exercises">
+      <div class="ex-header">
+        <div class="ex-title">Mindful exercises</div>
+        <div class="ex-sub">Evidence-based techniques for calm</div>
+      </div>
+
+      <div class="ex-featured" onclick="openBreathe()">
+        <div class="ex-feat-tag">Featured · Start here</div>
+        <div class="ex-feat-title">4-7-8 Breathing</div>
+        <div class="ex-feat-sub">The most effective technique for immediate anxiety relief. Activates your parasympathetic nervous system in under 5 minutes.</div>
+        <button class="ex-feat-btn">Begin session ›</button>
+      </div>
+
+      <div class="section-hd">All exercises</div>
+      <div class="ex-grid">
+        <div class="ex-card" onclick="openBreathe()">
+          <div class="ex-card-icon">🫁</div>
+          <div class="ex-card-title">Box breathing</div>
+          <div class="ex-card-dur">4 min · Calm focus</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:60%"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-card-icon">🧠</div>
+          <div class="ex-card-title">CBT thought log</div>
+          <div class="ex-card-dur">10 min · Reframe thoughts</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:30%"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-card-icon">🌊</div>
+          <div class="ex-card-title">Body scan</div>
+          <div class="ex-card-dur">8 min · Release tension</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:0%"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-card-icon">✍️</div>
+          <div class="ex-card-title">Gratitude list</div>
+          <div class="ex-card-dur">5 min · Shift perspective</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:80%"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-card-icon">🌿</div>
+          <div class="ex-card-title">5-4-3-2-1 grounding</div>
+          <div class="ex-card-dur">3 min · Panic relief</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:50%"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-card-icon">🔮</div>
+          <div class="ex-card-title">Mindful meditation</div>
+          <div class="ex-card-dur">10 min · Deep calm</div>
+          <div class="ex-card-bar"><div class="ex-card-prog" style="width:20%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="screen-profile">
+      <div class="profile-header">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar">🌙</div>
+          <div class="profile-badge">PRO</div>
+        </div>
+        <div class="profile-name">Your Space</div>
+        <div class="profile-since">Member since January 2026</div>
+      </div>
+
+      <div class="wellness-score">
+        <div class="score-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(94,207,177,0.1)" stroke-width="4"/>
+            <circle cx="32" cy="32" r="26" fill="none" stroke="#5ecfb1" stroke-width="4" stroke-dasharray="163.36" stroke-dashoffset="44" stroke-linecap="round"/>
+          </svg>
+          <div class="score-num">72</div>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Wellness score</div>
+          <div class="score-desc">You're doing well. Consistent journaling and breathing exercises are working. Keep going 🌱</div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-num">14</div><div class="pstat-lbl">Sessions</div></div>
+        <div class="pstat"><div class="pstat-num">7</div><div class="pstat-lbl">Day streak</div></div>
+        <div class="pstat"><div class="pstat-num">11</div><div class="pstat-lbl">Journals</div></div>
+      </div>
+
+      <div class="section-hd">Settings</div>
+      <div class="settings-list">
+        <div class="setting-item"><div class="setting-icon" style="background:var(--teal-dim)">🔔</div><div class="setting-label">Daily reminders</div><div class="setting-arrow">›</div></div>
+        <div class="setting-item"><div class="setting-icon" style="background:var(--lavender-dim)">🔒</div><div class="setting-label">Privacy & data</div><div class="setting-arrow">›</div></div>
+        <div class="setting-item"><div class="setting-icon" style="background:var(--amber-dim)">⭐</div><div class="setting-label">Upgrade to Premium</div><div class="setting-arrow">›</div></div>
+        <div class="setting-item"><div class="setting-icon" style="background:var(--coral-dim)">🆘</div><div class="setting-label">Crisis resources</div><div class="setting-arrow">›</div></div>
+        <div class="setting-item"><div class="setting-icon" style="background:var(--bg3)">ℹ️</div><div class="setting-label">About CancerianMind</div><div class="setting-arrow">›</div></div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- BREATHING EXERCISE MODAL -->
+    <div class="breathe-modal" id="breathe-modal">
+      <button class="breathe-close" onclick="closeBreathe()">← Back</button>
+      <div class="breathe-title">4-7-8 Breathing</div>
+      <div class="breathe-subtitle">Inhale 4s · Hold 7s · Exhale 8s</div>
+      <div class="breathe-circle-wrap">
+        <div class="breathe-ring">
+          <div class="breathe-inner" id="breathe-inner">
+            <div class="breathe-phase" id="breathe-phase">Ready</div>
+          </div>
+        </div>
+      </div>
+      <div class="breathe-count" id="breathe-count">—</div>
+      <div class="breathe-instruction" id="breathe-instr">Tap begin to start your session</div>
+      <button class="breathe-start" id="breathe-btn" onclick="toggleBreathe()">Begin</button>
+    </div>
+
+    <!-- JOURNAL WRITE MODAL -->
+    <div class="write-modal" id="write-modal">
+      <div class="write-modal-header">
+        <div class="write-modal-title">Today's entry</div>
+        <div style="display:flex;gap:8px">
+          <button class="write-close" onclick="closeWriteModal()">Cancel</button>
+          <button class="write-save" onclick="saveEntry()">Save</button>
+        </div>
+      </div>
+      <div class="write-body">
+        <div class="write-prompt">Today's prompt: "What made you smile today?"</div>
+        <textarea class="write-area" placeholder="Start writing freely — this is your safe space..."></textarea>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="goTo('home')">
+      <svg class="nav-icon nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#5ecfb1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" id="nav-chat" onclick="goTo('chat')">
+      <svg class="nav-icon nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#8b92a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="nav-label">Talk</span>
+    </div>
+    <div class="nav-item" id="nav-journal" onclick="goTo('journal')">
+      <svg class="nav-icon nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#8b92a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      <span class="nav-label">Journal</span>
+    </div>
+    <div class="nav-item" id="nav-exercises" onclick="goTo('exercises')">
+      <svg class="nav-icon nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#8b92a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span class="nav-label">Exercises</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="goTo('profile')">
+      <svg class="nav-icon nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#8b92a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profile</span>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// Navigation
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    n.querySelector('.nav-icon-svg').setAttribute('stroke','#8b92a8');
+  });
+  document.getElementById('screen-' + screen).classList.add('active');
+  const navEl = document.getElementById('nav-' + screen);
+  navEl.classList.add('active');
+  navEl.querySelector('.nav-icon-svg').setAttribute('stroke','#5ecfb1');
+}
+
+// Mood selection
+function selectMood(el, emoji, label) {
+  document.querySelectorAll('.mood-opt').forEach(m => m.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// Crisis help
+function showCrisisHelp() {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'cmsg';
+  div.innerHTML = `<div class="cmsg-avatar ai">🤖</div><div class="cbubble ai crisis">
+    <div style="font-weight:600;color:var(--coral);margin-bottom:6px">🆘 Crisis Support — India</div>
+    I'm here with you. Please reach out to one of these helplines right now:
+    <div class="crisis-hotline-inline">iCall · 9152987821</div>
+    <div class="crisis-hotline-inline">Vandrevala Foundation · 1860-2662-345</div>
+    <div class="crisis-hotline-inline">NIMHANS · 080-46110007</div>
+    <div class="crisis-hotline-inline">Emergency · 112</div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text2)">You matter. Help is available 24/7.</div>
+  </div>`;
+  msgs.appendChild(div);
+  goTo('chat');
+  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 100);
+}
+
+// Chat
+const SYSTEM = `You are CancerianMind, a warm and empathetic psychology AI therapist. Use CBT techniques, active listening, and mindfulness. Be concise (3-4 sentences), ask one open question. Never diagnose. For crisis keywords (suicide, harm, die) — immediately provide iCall: 9152987821.`;
+let chatHistory = [];
+let chatBusy = false;
+
+function resizeTA(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+function chatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();} }
+
+async function sendChat() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if(!text||chatBusy) return;
+  chatBusy = true;
+  document.getElementById('chat-send').disabled = true;
+  inp.value = ''; inp.style.height = 'auto';
+
+  const msgs = document.getElementById('chat-msgs');
+  const userDiv = document.createElement('div');
+  userDiv.className = 'cmsg user';
+  userDiv.innerHTML = `<div class="cmsg-avatar user">Me</div><div class="cbubble user">${text}</div>`;
+  msgs.appendChild(userDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatHistory.push({role:'user', content:text});
+
+  // Typing
+  const tDiv = document.createElement('div');
+  tDiv.className = 'cmsg'; tDiv.id = 'typing-indicator';
+  tDiv.innerHTML = `<div class="cmsg-avatar ai">🤖</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(tDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system: SYSTEM, messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    document.getElementById('typing-indicator').remove();
+    const reply = data.content?.[0]?.text || "I'm here with you. Could you share more?";
+    chatHistory.push({role:'assistant', content:reply});
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'cmsg';
+    const isCrisis = /suicide|kill myself|end my life|self.harm|want to die/i.test(text);
+    aiDiv.innerHTML = `<div class="cmsg-avatar ai">🤖</div><div class="cbubble ai${isCrisis?' crisis':''}">${reply}${isCrisis?`<div class="crisis-hotline-inline">If in crisis: iCall 9152987821 · Vandrevala 1860-2662-345</div>`:''}</div>`;
+    msgs.appendChild(aiDiv);
+  } catch(e) {
+    document.getElementById('typing-indicator')?.remove();
+    const errDiv = document.createElement('div');
+    errDiv.className = 'cmsg';
+    errDiv.innerHTML = `<div class="cmsg-avatar ai">🤖</div><div class="cbubble ai">Having trouble connecting. Please try again. If in crisis: iCall 9152987821</div>`;
+    msgs.appendChild(errDiv);
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+  chatBusy = false;
+  document.getElementById('chat-send').disabled = false;
+  inp.focus();
+}
+
+// Breathing exercise
+let breatheRunning = false;
+let breatheTimer = null;
+const phases = [
+  {name:'Inhale', dur:4, cls:'expand', instr:'Breathe in slowly through your nose...'},
+  {name:'Hold', dur:7, cls:'hold', instr:'Hold your breath gently...'},
+  {name:'Exhale', dur:8, cls:'shrink', instr:'Slowly exhale through your mouth...'},
+];
+let phaseIdx = 0, countdown = 0;
+
+function openBreathe() { document.getElementById('breathe-modal').classList.add('active'); }
+function closeBreathe() {
+  document.getElementById('breathe-modal').classList.remove('active');
+  stopBreathe();
+}
+
+function toggleBreathe() {
+  if(breatheRunning) { stopBreathe(); return; }
+  breatheRunning = true;
+  document.getElementById('breathe-btn').textContent = 'Stop';
+  phaseIdx = 0; countdown = phases[0].dur;
+  runBreath();
+}
+
+function stopBreathe() {
+  breatheRunning = false;
+  clearTimeout(breatheTimer);
+  document.getElementById('breathe-btn').textContent = 'Begin';
+  document.getElementById('breathe-phase').textContent = 'Ready';
+  document.getElementById('breathe-count').textContent = '—';
+  document.getElementById('breathe-instr').textContent = 'Tap begin to start your session';
+  const inner = document.getElementById('breathe-inner');
+  inner.className = 'breathe-inner';
+}
+
+function runBreath() {
+  if(!breatheRunning) return;
+  const p = phases[phaseIdx];
+  const inner = document.getElementById('breathe-inner');
+  inner.className = 'breathe-inner ' + p.cls;
+  document.getElementById('breathe-phase').textContent = p.name;
+  document.getElementById('breathe-instr').textContent = p.instr;
+  document.getElementById('breathe-count').textContent = countdown;
+  if(countdown > 0) {
+    countdown--;
+    breatheTimer = setTimeout(runBreath, 1000);
+  } else {
+    phaseIdx = (phaseIdx + 1) % phases.length;
+    countdown = phases[phaseIdx].dur;
+    breatheTimer = setTimeout(runBreath, 500);
+  }
+}
+
+// Journal modal
+function openWriteModal() { document.getElementById('write-modal').classList.add('active'); }
+function closeWriteModal() { document.getElementById('write-modal').classList.remove('active'); }
+function saveEntry() {
+  closeWriteModal();
+  // In real app: save to DB
+}
+</script>
+</body>
+</html>
